@@ -10,9 +10,13 @@ const OrdersSchema = mongoose.Schema(
         message: "{VALUE} is not on our menu.",
       },
     },
-    quantity: {
+    pieces: {
       type: Number,
-      required: [true, "You forgot to add the quantity of your order."],
+      required: [true, "You forgot to add how many pieces of your order."],
+    },
+    sets: {
+      type: Number,
+      required: [true, "You forgot to add how many sets of your order."],
     },
     price: {
       type: Number,
