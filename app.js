@@ -54,6 +54,25 @@ app.use(notFoundMiddleware);
 
 io.on("connection", (socket) => {
   console.log(socket.id);
+
+  socket.join(process.env.SEND_TO);
+
+  socket.on("join-room", ({ room }) => {
+    socket.join(room);
+  });
+
+  socket.on("send-message", ({ room }) => {
+    socket.join(room);
+    socket.to(room).emit("receive-message", room);
+  });
+
+  socket.on("place-order", ({ room }) => {
+    socket.to(process.env.SEND_TO).emit("reflect-place-order", room);
+  });
+
+  socket.on("update-order", ({ room }) => {
+    socket.to(room).emit("reflect-update-order", room);
+  });
 });
 
 const port = process.env.PORT || 9000;

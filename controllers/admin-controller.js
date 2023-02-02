@@ -135,6 +135,10 @@ const orderResponse = async (req, res) => {
     case "Delivery Failed":
       statusMessage = "We are sorry, but the delivery has failed. Please message us for help.";
       break;
+    case "Cancel":
+      status = "Cancellation Confirmed";
+      statusMessage = "We are sorry, but the delivery has failed. Please message us for help.";
+      break;
     default:
       statusMessage;
       break;

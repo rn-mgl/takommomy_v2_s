@@ -18,17 +18,35 @@ const createOrder = async (req, res) => {
 
 const getAllOrders = async (req, res) => {
   const { id } = req.user;
+  const { type } = req.query;
 
-  const orders = await Orders.find({
-    orderedBy: id,
-    status: { $in: ["Requesting", "Requesting Cancellation", "Cooking"] },
-  });
+  if (type === "p") {
+    const orders = await Orders.find({
+      orderedBy: id,
+      status: { $nin: ["On Delivery", "Delivery Failed", "Successful"] },
+    });
 
-  if (!orders) {
+    if (!orders) {
+      throw new BadRequestError(`Error in getting orders. Try again later.`);
+    }
+
+    res.status(StatusCodes.OK).json(orders);
+    return;
+  } else if (type === "d") {
+    const orders = await Orders.find({
+      orderedBy: id,
+      status: { $in: ["On Delivery", "Delivery Failed", "Successful"] },
+    });
+
+    if (!orders) {
+      throw new BadRequestError(`Error in getting orders. Try again later.`);
+    }
+
+    res.status(StatusCodes.OK).json(orders);
+    return;
+  } else {
     throw new BadRequestError(`Error in getting orders. Try again later.`);
   }
-
-  res.status(StatusCodes.OK).json(orders);
 };
 
 const getOrder = async (req, res) => {
