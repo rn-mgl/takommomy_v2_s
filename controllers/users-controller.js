@@ -14,18 +14,6 @@ const getUser = async (req, res) => {
   res.status(StatusCodes.OK).json(user);
 };
 
-const getAllUsers = async (req, res) => {
-  const { id } = req.user;
-
-  const user = await Users.find({ _id: { $ne: id } });
-
-  if (!user) {
-    throw new NotFoundError(`No user found with the id ${id}.`);
-  }
-
-  res.status(StatusCodes.OK).json(user);
-};
-
 const updateUser = async (req, res) => {
   const { name, surname, oldPassword, newPassword, number, updateType } = req.body;
   const { id } = req.user;
@@ -83,4 +71,4 @@ const updateUser = async (req, res) => {
   }
 };
 
-module.exports = { getAllUsers, getUser, updateUser };
+module.exports = { getUser, updateUser };

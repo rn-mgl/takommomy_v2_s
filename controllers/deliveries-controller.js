@@ -25,29 +25,18 @@ const getDelivery = async (req, res) => {
     throw new NotFoundError(`No delivery found with the id ${order_id}.`);
   }
 
-  const user = await Users.findById(delivery?.orderedBy);
-
-  if (!user) {
-    throw new NotFoundError(`No user found with the id ${delivery?.orderedBy}.`);
-  }
-
-  res.status(StatusCodes.OK).json({ delivery, user });
+  res.status(StatusCodes.OK).json(delivery);
 };
 
 const getAllDelivery = async (req, res) => {
-  const deliveries = await Orders.find({ status: "On Delivery" });
+  const { id } = req.user;
+  const deliveries = await Orders.find({ status: "On Delivery", orderedBy: id });
 
   if (!deliveries) {
     throw new BadRequestError(`Error in getting all deliveries. Try again later.`);
   }
 
-  const users = await Users.find({ _id: { $in: deliveries.orderedBy } });
-
-  if (!users) {
-    throw new BadRequestError(`Error in getting all orders. Try again later.`);
-  }
-
-  res.status(StatusCodes.OK).json({ deliveries, users });
+  res.status(StatusCodes.OK).json(deliveries);
 };
 
 const removeDelivery = async (req, res) => {

@@ -70,7 +70,7 @@ const verifyUser = async (req, res) => {
     );
   }
 
-  const decode = jwt.decode(token, process.env.JWT_SECRET);
+  const decode = jwt.verify(token, process.env.JWT_SECRET);
 
   const { id, name, surname, email } = decode;
 

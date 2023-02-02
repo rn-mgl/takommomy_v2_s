@@ -19,7 +19,10 @@ const createOrder = async (req, res) => {
 const getAllOrders = async (req, res) => {
   const { id } = req.user;
 
-  const orders = await Orders.find({ orderedBy: id });
+  const orders = await Orders.find({
+    orderedBy: id,
+    status: { $in: ["Requesting", "Requesting Cancellation", "Cooking"] },
+  });
 
   if (!orders) {
     throw new BadRequestError(`Error in getting orders. Try again later.`);
@@ -41,12 +44,12 @@ const getOrder = async (req, res) => {
 };
 
 const cancelOrder = async (req, res) => {
-  const { cancellationReason } = req.body;
+  const { reason } = req.body;
   const { order_id } = req.params;
 
   const order = await Orders.findByIdAndUpdate(order_id, {
-    status: "Buyer Cancellation Request",
-    statusMessage: cancellationReason,
+    status: "Requesting Cancellation",
+    statusMessage: `Reason: ${reason}`,
   });
 
   if (!order) {

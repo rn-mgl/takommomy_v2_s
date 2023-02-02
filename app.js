@@ -1,17 +1,27 @@
 require("dotenv").config();
 require("express-async-errors");
 
+const cloudinary = require("cloudinary").v2;
+
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./db/connect");
 const fileUpload = require("express-fileupload");
+
 const app = express();
 const server = require("http").createServer(app);
 const io = require("socket.io")(server, { cors: { origin: "*" } });
 const xss = require("xss-clean");
 const helmet = require("helmet");
 
-const authMiddleWare = require("./middleware/auth-middleware");
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_KEY,
+  api_secret: process.env.CLOUDINARY_SECRET,
+});
+
+const userAuthMiddleWare = require("./middleware/user-auth-middleware");
+const adminAuthMiddleware = require("./middleware/admin-auth-middleware");
 const errorMiddleware = require("./middleware/error-middleware");
 const notFoundMiddleware = require("./middleware/not-found-middleware");
 
@@ -22,6 +32,7 @@ const incomeRouter = require("./routers/income-route");
 const messageRouter = require("./routers/messages-route");
 const ordersRouter = require("./routers/orders-route");
 const usersRouter = require("./routers/users-route");
+const fileRouter = require("./routers/file-route");
 
 app.use(fileUpload({ useTempFiles: true }));
 app.use(express.json());
@@ -30,12 +41,13 @@ app.use(helmet());
 app.use(cors());
 
 app.use("/auth", authRouter);
-app.use("/admin", authMiddleWare, adminRouter);
-app.use("/delivery", authMiddleWare, deliveryRouter);
-app.use("/income", authMiddleWare, incomeRouter);
-app.use("/message", authMiddleWare, messageRouter);
-app.use("/orders", authMiddleWare, ordersRouter);
-app.use("/users", authMiddleWare, usersRouter);
+app.use("/admin", adminAuthMiddleware, adminRouter);
+app.use("/delivery", userAuthMiddleWare, deliveryRouter);
+app.use("/income", userAuthMiddleWare, incomeRouter);
+app.use("/message", userAuthMiddleWare, messageRouter);
+app.use("/orders", userAuthMiddleWare, ordersRouter);
+app.use("/users", userAuthMiddleWare, usersRouter);
+app.use("/file", userAuthMiddleWare, fileRouter);
 
 app.use(errorMiddleware);
 app.use(notFoundMiddleware);
