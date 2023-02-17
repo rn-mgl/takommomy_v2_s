@@ -1,6 +1,6 @@
 const sgMail = require("@sendgrid/mail");
 
-const url = `https://takomommy-server.onrender.com`;
+const url = `https://takomommy.vercel.app`;
 
 const sendMail = async (user, sendToEmail, token) => {
   sgMail.setApiKey(process.env.SENDGRID);
