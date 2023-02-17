@@ -1,6 +1,6 @@
 const sgMail = require("@sendgrid/mail");
 
-const url = `http://192.168.1.121:3000`;
+const url = `https://takomommy-server.onrender.com`;
 
 const sendMail = async (user, sendToEmail, token) => {
   sgMail.setApiKey(process.env.SENDGRID);
